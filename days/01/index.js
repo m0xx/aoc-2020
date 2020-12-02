@@ -1,15 +1,15 @@
 const R = require('rambda');
-const {permutations} = require('../../lib/utils');
+const {combinaisons, sum, product} = require('../../lib/utils');
 const {readAndSplit} = require('../../lib/files');
-const sum = (items) => items.reduce((total, current) => total + current, 0);
 
-const resolveProblem = (filename, nbPermutation, total) => R.compose(
-    (items) => items.reduce((prev, current ) => prev * current, 1),
+const resolveProblem = (filename, combinaisonLength, total) => R.compose(
+    product,
     R.find((items) => sum(items) === total),
-    permutations(nbPermutation),
+    combinaisons(combinaisonLength),
     R.map(expense => parseInt(expense, 10)),
     readAndSplit
 )(filename)
 
 
-console.log(resolveProblem('day-01.puzzle.txt', 3, 2020))
+console.log('P1: ' + resolveProblem('day-01.puzzle.txt', 2, 2020))
+console.log('P2: ' + resolveProblem('day-01.puzzle.txt', 3, 2020))
