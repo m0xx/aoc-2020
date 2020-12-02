@@ -7,18 +7,7 @@ const isValidP1 = ({min, max, letter, password}) => {
     const letterCount = countLetter(password, letter);
     return letterCount >= min && letterCount <= max;
 }
-
-const isValidP2 = ({min, max, letter, password}) => {
-    let nbMatch = 0;
-    if(password[min - 1] === letter) {
-        nbMatch++
-    }
-    if(password[max - 1] === letter) {
-        nbMatch++
-    }
-
-    return nbMatch === 1;
-}
+const isValidP2 = ({min, max, letter, password}) => countLetter("" + password[min - 1] + password[max - 1], letter) === 1
 
 const parse = (str) => {
     const result = str.match(/^(\d*)-(\d*)\s([a-zA-Z]):\s([a-zA-Z]*)$/)
