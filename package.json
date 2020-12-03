@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "day01": "node days/01/index.js",
-    "day02": "node days/02/index.js"
+    "day02": "node days/02/index.js",
+    "day03": "node days/03/index.js"
   },
   "repository": {
     "type": "git",
