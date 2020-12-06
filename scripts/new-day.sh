@@ -25,7 +25,6 @@ if [ ! -f "$EXS_FILE" ]; then
   git add $EXS_FILE
 fi
 
-
 # inputs
 if [ ! -f "inputs/day-$CURRENT_DAY.sample.txt" ]; then
   echo "Creating input files..."
