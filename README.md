@@ -1,8 +1,10 @@
 # Advent of code - 2020
 
-### nodejs
-Having fun with functional concept in javascript
 
-#### Libs
+# Languages
+- [nodejs](./nodejs)
+- [elixir](./elixir)
 
-[rambda](https://selfrefactor.github.io/rambda/#/)
+### References
+- [rambda](https://selfrefactor.github.io/rambda/#/)
+- [elixir](https://hexdocs.pm/elixir/Kernel.html)
