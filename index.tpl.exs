@@ -1,6 +1,6 @@
 defmodule AOC2020Day__DAY__ do
   def parse() do
-    File.read!("../inputs/day-__DAY__.sample.txt")
+    File.read!("inputs/day-__DAY__.sample.txt")
       |> String.split("\n", trim: true)
   end
 
@@ -14,5 +14,5 @@ defmodule AOC2020Day__DAY__ do
 end
 
 
-AOC2020Day__DAY__.part1() |> IO.puts
-AOC2020Day__DAY__.part2() |> IO.puts
+AOC2020Day__DAY__.part1() |> IO.inspect
+AOC2020Day__DAY__.part2() |> IO.inspect
