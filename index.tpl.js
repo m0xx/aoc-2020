@@ -1,8 +1,8 @@
 const R = require('rambda');
-const {product, sum, combinaisons, countBy} = require('../../lib/utils');
+const {product, sum, combinaisons, countBy, max} = require('../../lib/utils');
 const {readAndSplit, splitChars, splitLines, readRawData, trim} = require('../../lib/files');
 
-const resolveProblem = (filename, moves) => R.compose(
+const resolveProblem = (filename) => R.compose(
     R.filter((str) => !!str),
     splitLines,
     readRawData,
