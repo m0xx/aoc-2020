@@ -50,12 +50,12 @@ defmodule AOC2020Day07 do
 
   def part1() do
     parse()
-      |> (fn rules ->
-          Enum.map(rules, fn rule -> bag_contains(rule, %{"tone" => "shiny", "color" => "gold"}, rules)
-
-          end)
-  end).()
-      |> Enum.count(fn found -> found end)
+#      |> (fn rules ->
+#          Enum.map(rules, fn rule -> bag_contains(rule, %{"tone" => "shiny", "color" => "gold"}, rules)
+#
+#          end)
+#  end).()
+#      |> Enum.count(fn found -> found end)
   end
 
   def part2() do
