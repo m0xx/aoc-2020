@@ -15,32 +15,45 @@ defmodule AOC2020Day08 do
     end
   end
 
-  def execute({op, arg}, acc) do
-    # TODO: rest operator??
+  def swap_op(op) do
     case op do
-      "acc" -> acc + arg
-      "nop" -> acc
-      "jmp" -> acc
+      "acc" -> "acc"
+      "nop" -> "jmp"
+      "jmp" -> "nop"
     end
   end
 
-#  def run({op, arg}, pointer, accumulator, history) when {op, arg} in history do
-#    IO.puts("Breaking out of loop...")
-#    accumulator
-#  end
+  def execute({op, arg}, acc) do
+    case op do
+      "acc" -> acc + arg
+      _ -> acc
+    end
+  end
+
 
   def run(instructions, pointer, accumulator, visited) do
-    {op, arg} = Enum.at(instructions, pointer)
-    IO.inspect({op, arg})
-    IO.puts(accumulator)
-
-    cond pointer do
+    cond do
       pointer in visited ->
         IO.puts("Breaking out of loop...")
         {:break, accumulator}
-      pointer >= len(instructions)
-         {:terminated, accumulator}
-      _ -> run(instructions, next_pointer({op, arg}, pointer), execute({op, arg}, accumulator), visited ++ [pointer])
+      pointer >= length(instructions) ->
+        IO.puts("Terminating...")
+        {:terminated, accumulator}
+      true ->
+        {op, arg} = Enum.at(instructions, pointer)
+        run(instructions, next_pointer({op, arg}, pointer), execute({op, arg}, accumulator), visited ++ [pointer])
+    end
+  end
+
+
+  def boot(instructions, index) do
+    {op, arg} = Enum.at(instructions, index)
+
+    {status, acc} = run(List.replace_at(instructions, index, {swap_op(op), arg}), 0, 0, [])
+    case status do
+      :break ->
+        boot(instructions, index + 1)
+      :terminated -> acc
     end
   end
 
@@ -51,9 +64,10 @@ defmodule AOC2020Day08 do
 
   def part2() do
     parse()
+    |> (fn instructions ->  boot(instructions, 0) end).()
   end
 end
 
 
 AOC2020Day08.part1() |> IO.inspect
-#AOC2020Day08.part2() |> IO.inspect
+AOC2020Day08.part2() |> IO.inspect
