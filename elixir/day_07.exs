@@ -1,8 +1,6 @@
 defmodule AOC2020Day07 do
 
   def bag_contains(rule, bag, rules) do
-    IO.puts("Bag contains:")
-    IO.inspect(rule)
     rule["bags"]
       |> Enum.find(fn current_bag->
           case current_bag do
@@ -18,13 +16,28 @@ defmodule AOC2020Day07 do
     |> (fn found -> found != nil end).()
   end
 
+  def bag_count(rule, rules) do
+    IO.inspect(rule)
+    rule["bags"]
+    |> Enum.map(fn current_bag->
+      IO.inspect(current_bag)
+      case current_bag do
+        :empty -> 0
+        %{"count" => count, "tone" => tone, "color" => color} ->
+          IO.puts(count)
+            count + count * bag_count(find_rule(rules, current_bag), rules)
+      end
+    end)
+    |> Enum.sum
+  end
+
   def parse_bag(str) do
       str
         |> String.split(",", trim: true)
         |> Enum.map(fn part ->
           regex = ~r/^.*(?<count>\d+)\s(?<tone>[a-z]+)\s(?<color>[a-z]+)\sbag.*$/
           case Regex.named_captures(regex, part) do
-              %{"count" => count, "tone" => tone, "color" => color} = parsed_bag -> parsed_bag
+              %{"count" => count, "tone" => tone, "color" => color} = parsed_bag -> %{parsed_bag | "count" => String.to_integer(count) }
               nil -> :empty
           end
         end)
@@ -50,20 +63,25 @@ defmodule AOC2020Day07 do
 
   def part1() do
     parse()
-#      |> (fn rules ->
-#          Enum.map(rules, fn rule -> bag_contains(rule, %{"tone" => "shiny", "color" => "gold"}, rules)
-#
-#          end)
-#  end).()
-#      |> Enum.count(fn found -> found end)
+      |> (fn rules ->
+          Enum.map(rules, fn rule -> bag_contains(rule, %{"tone" => "shiny", "color" => "gold"}, rules)
+
+          end)
+  end).()
+      |> Enum.count(fn found -> found end)
   end
 
-  def part2() do
+  def part2(bag) do
+    IO.puts("P2")
     parse()
+#    |> (fn rules -> bag_count(Enum.at(rules, 0), rules) end).()
+    |> (fn rules ->
+      bag_count(find_rule(rules, bag), rules)
+        end).()
   end
 end
 
 
-AOC2020Day07.part1() |> IO.inspect
-#AOC2020Day07.part2() |> IO.inspect
+#AOC2020Day07.part1() |> IO.inspect
+AOC2020Day07.part2( %{"tone" => "shiny", "color" => "gold"}) |> IO.inspect
 
