@@ -34,15 +34,14 @@ defmodule AOC2020Day08 do
     IO.inspect({op, arg})
     IO.puts(accumulator)
 
-    if(pointer in visited) do
+    cond pointer do
+      pointer in visited ->
         IO.puts("Breaking out of loop...")
-        accumulator
-    else
-        run(instructions, next_pointer({op, arg}, pointer), execute({op, arg}, accumulator), visited ++ [pointer])
-
+        {:break, accumulator}
+      pointer >= len(instructions)
+         {:terminated, accumulator}
+      _ -> run(instructions, next_pointer({op, arg}, pointer), execute({op, arg}, accumulator), visited ++ [pointer])
     end
-
-
   end
 
   def part1() do
