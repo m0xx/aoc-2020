@@ -32,12 +32,32 @@ defmodule AOC2020Day10 do
       |> (fn [a,b] -> a * b end).()
   end
 
+  def list_possibilities(possibilities_by_adapter, adapters, acc) do
+    current = List.last(adapters[0])
+    next_adapters = Map.get(possibilities_by_adapter, current)
+
+    cond  do
+      next_adapters && length(next_adapters) > 0 ->
+        Enum.map(fn adapter ->
+          list_possibilities(
+                            possibilities_by_adapter,
+                            List.filter(fn a -> a > adapter end),
+                            acc ++ [current])
+        end)
+      true -> [acc ++ adapters]
+    end
+  end
   def part2() do
     adapters = parse()
-    Enum.reduce(adapters, %{}, fn adapter -> Enum.filter(fn a -> a > adapter && a - adapters <= 3  end)  end)
+    possibilities_by_adapter = Enum.reduce(adapters, %{}, fn adapter, acc ->
+      Map.put(acc, adapter, Enum.filter(adapters, fn a -> a > adapter && a - adapter <= 3  end))
+    end)
+
+    adapters
+      |> list_possibilities(possibilities_by_adapter, adapters, [])
   end
 end
 
 
-AOC2020Day10.part1() |> IO.inspect
-#AOC2020Day10.part2() |> IO.inspect
+#AOC2020Day10.part1() |> IO.inspect
+AOC2020Day10.part2() |> IO.inspect
