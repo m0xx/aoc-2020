@@ -35,14 +35,11 @@ defmodule AOC2020Day10 do
     current = List.first(adapters)
     next_adapters = Map.get(possibilities_by_adapter, current)
 
-#    IO.inspect({current, adapters, next_adapters, acc})
     cond  do
       next_adapters && length(next_adapters) > 0 ->
       Enum.reduce(next_adapters, [], fn
         adapter, r_acc ->
-#      IO.inspect({:next, adapter})
           filtered = Enum.filter(adapters, fn a -> a > adapter end)
-#          IO.inspect({adapter, filtered})
           combinaisons = list_possibilities(possibilities_by_adapter, [adapter] ++ filtered, acc ++ [current])
           r_acc ++ Enum.map(combinaisons, fn rest -> rest end)
       end)
