@@ -1,6 +1,6 @@
 defmodule AOC2020Day10 do
   def parse() do
-    File.read!("inputs/day-10.puzzle.txt")
+    File.read!("inputs/day-10.sample.txt")
       |> String.split("\n", trim: true)
       |> Enum.map(&String.to_integer/1)
       |> Enum.sort
@@ -33,7 +33,8 @@ defmodule AOC2020Day10 do
   end
 
   def part2() do
-    parse()
+    adapters = parse()
+    Enum.reduce(adapters, %{}, fn adapter -> Enum.filter(fn a -> a > adapter && a - adapters <= 3  end)  end)
   end
 end
 
