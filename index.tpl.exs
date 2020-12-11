@@ -1,3 +1,5 @@
+Code.require_file("elixir/utils.exs")
+
 defmodule AOC2020Day__DAY__ do
   def parse() do
     File.read!("inputs/day-__DAY__.sample.txt")
