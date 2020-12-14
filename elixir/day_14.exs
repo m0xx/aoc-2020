@@ -7,7 +7,7 @@ defmodule AOC2020Day14 do
   defp pow(n, k, acc), do: pow(n, k - 1, n * acc)
 
   def parse() do
-    File.read!("inputs/day-14.puzzle.txt")
+    File.read!("inputs/day-14.sample.txt")
       |> String.split("\n", trim: true)
       |> Enum.map(fn part ->
         regex = ~r/^(?<cmd>.*)\s\=\s(?<value>.+)$/
@@ -94,7 +94,10 @@ defmodule AOC2020Day14 do
 end
 
 
-AOC2020Day14.part1() |> IO.inspect
+#AOC2020Day14.part1() |> IO.inspect
+
+Utils.combinaisons(2, [0,1]) |> IO.inspect
+
 #AOC2020Day14.part2() |> IO.inspect
 
 #AOC2020Day14.parse_bits("101") |> IO.inspect
