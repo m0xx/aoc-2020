@@ -7,6 +7,9 @@ defmodule Utils do
   def permutations([]), do: [[]]
   def permutations(list), do: for elem <- list, rest <- permutations(list--[elem]), do: [elem|rest]
 
+  # ordre
+  # nb elements
+  # remise / sans remise
   def combinaisons(1, items, current), do: Enum.map(items, fn item -> current ++ [item] end)
   def combinaisons(length, items, current), do: Enum.reduce(items, [], fn item, acc -> acc ++ combinaisons(length - 1, Enum.slice(items, Enum.find_index(items,
     fn i -> i == item end) + 1, length(items)), current ++ [item])  end)
