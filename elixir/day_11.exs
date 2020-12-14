@@ -13,9 +13,18 @@ defmodule AOC2020Day11 do
     defstruct [:x, :y, :state]
   end
 
-  def adjacent_seats(layout, seat) do
+  def in_layout?(layout, {x,y}) do
     nb_row = length(layout)
     nb_col = length(Enum.at(layout, 0))
+
+    x < nb_col && x >= 0 && y < nb_row && y >= 0
+  end
+
+  def get_seat(layout, {x,y}) do
+    Enum.at(Enum.at(layout, y), x)
+  end
+
+  def adjacent_seats(layout, seat, length_per_direction) do
 
     [
       [-1, 1],
@@ -27,11 +36,21 @@ defmodule AOC2020Day11 do
       [0, 1],
       [0, -1]
     ]
+      |> Enum.map(fn [x_offset, y_offset] ->
+          Enum.reduce_while(1..length_per_direction, [], fn idx ->
+            [n_x_offset, n_y_offset] = [x_offset * idx, y_offset * idx]
+
+            [next_x, next_y] = [n_x_offset + seat.x, n_y_offset + seat.y]
+
+            cond do
+              not in_layout?(layout,[next_x, next_y]) -> {:halt, [n_x_offset, n_y_offset]}
+              get_seat(layout, {next_x, next_y}).state == :floor -> {:cont, [n_x_offset, n_y_offset]}
+              true -> {:halt, [n_x_offset, n_y_offset]}
+            end
+          end)
+      end)
      |> Enum.filter(fn [x_offset, y_offset] ->
-        seat.x + x_offset < nb_col &&
-        seat.x + x_offset >= 0 &&
-        seat.y + y_offset < nb_row &&
-        seat.y + y_offset >= 0
+        in_layout?(layout, {seat.x + x_offset, seat.y + y_offset})
     end)
      |> Enum.map(fn [x_offset, y_offset] -> Enum.at(Enum.at(layout, seat.y + y_offset),  seat.x + x_offset) end)
   end
@@ -65,7 +84,7 @@ defmodule AOC2020Day11 do
   #def is_adjacent_occ(layout, seat_ref, seat_adj), do: seat_adj.is_occupied
 
   def parse() do
-    layout = File.read!("inputs/day-11.puzzle.txt")
+    layout = File.read!("inputs/day-11.sample.txt")
       |> String.split("\n", trim: true)
       |> Enum.map(&String.split(&1, "", trim: true) |> Enum.map(fn a -> to_seat(a) end))
 
@@ -77,11 +96,11 @@ defmodule AOC2020Day11 do
     end)
   end
 
-  def simulate(layout) do
+  def simulate(layout, length_per_direction) do
       seats = List.flatten(layout)
 
       Enum.reduce(seats, layout, fn seat, inner_layout ->
-        next_seat = apply_rule(seat, adjacent_seats(layout, seat))
+        next_seat = apply_rule(seat, adjacent_seats(layout, seat, length_per_direction))
         row = Enum.at(inner_layout, seat.y)
 
         List.replace_at(inner_layout, seat.y, List.replace_at(row, seat.x, next_seat))
@@ -115,12 +134,12 @@ defmodule AOC2020Day11 do
   end
   def part1() do
     layout = parse()
-
+    length_per_direction = 1;
 
     Enum.reduce_while(0..100000, {1, layout}, fn x, {count, prev} ->
         IO.puts(count)
         format_layout(prev)
-        next = simulate(prev)
+        next = simulate(prev, length_per_direction)
         if same_layout?(prev, next) do
           {:halt, {count, next}}
         else
@@ -134,9 +153,9 @@ defmodule AOC2020Day11 do
 
   def part2() do
     layout = parse()
-    IO.inspect(Enum.at(Enum.at(layout, 5),5))
-#    adjacent_seats(layout, Enum.at(Enum.at(layout, 5), 5))
-    apply_rule(Enum.at(Enum.at(layout, 5),5), adjacent_seats(layout, Enum.at(Enum.at(layout, 5), 5)))
+
+    1..5
+      |> Enum.to_list()
   end
 end
 
