@@ -37,13 +37,13 @@ defmodule AOC2020Day11 do
       [0, -1]
     ]
       |> Enum.map(fn [x_offset, y_offset] ->
-          Enum.reduce_while(1..length_per_direction, [], fn idx ->
+          Enum.reduce_while(1..length_per_direction, [], fn idx, _acc ->
             [n_x_offset, n_y_offset] = [x_offset * idx, y_offset * idx]
 
             [next_x, next_y] = [n_x_offset + seat.x, n_y_offset + seat.y]
 
             cond do
-              not in_layout?(layout,[next_x, next_y]) -> {:halt, [n_x_offset, n_y_offset]}
+              not in_layout?(layout, {next_x, next_y}) -> {:halt, [n_x_offset, n_y_offset]}
               get_seat(layout, {next_x, next_y}).state == :floor -> {:cont, [n_x_offset, n_y_offset]}
               true -> {:halt, [n_x_offset, n_y_offset]}
             end
@@ -55,10 +55,10 @@ defmodule AOC2020Day11 do
      |> Enum.map(fn [x_offset, y_offset] -> Enum.at(Enum.at(layout, seat.y + y_offset),  seat.x + x_offset) end)
   end
 
-  def apply_rule(seat, adj_seats) do
+  def apply_rule(seat, adj_seats, min_occupied) do
     case seat.state do
       :empty -> apply_rule_empty(seat, adj_seats)
-      :occupied -> apply_rule_occupied(seat, adj_seats)
+      :occupied -> apply_rule_occupied(seat, adj_seats, min_occupied)
       _ -> seat
     end
   end
@@ -71,22 +71,23 @@ defmodule AOC2020Day11 do
       end
   end
 
-  def apply_rule_occupied(seat, adj_seats) do
+  def apply_rule_occupied(seat, adj_seats, min_occupied) do
     count_adj_occupied_seat = Enum.filter(adj_seats, fn s -> s.state == :occupied end) |> length
-    if count_adj_occupied_seat >= 4 do
+    if count_adj_occupied_seat >= min_occupied do
       %Seat{ seat | state: :empty}
     else
       seat
     end
   end
-  #def is_adjacent_occ(layout, seat_ref, seat_adj), do: false when seat_adj.x >= length(Enum.at(layout, 0))
-  #def is_adjacent_occ(layout, seat_ref, seat_adj), do: false when seat_adj.y >= length(layout)
-  #def is_adjacent_occ(layout, seat_ref, seat_adj), do: seat_adj.is_occupied
 
   def parse() do
-    layout = File.read!("inputs/day-11.sample.txt")
-      |> String.split("\n", trim: true)
-      |> Enum.map(&String.split(&1, "", trim: true) |> Enum.map(fn a -> to_seat(a) end))
+    parse("inputs/day-11.puzzle.txt")
+  end
+
+  def parse(file) do
+    layout = File.read!(file)
+             |> String.split("\n", trim: true)
+             |> Enum.map(&String.split(&1, "", trim: true) |> Enum.map(fn a -> to_seat(a) end))
 
     Enum.map(0..length(layout) - 1, fn y ->
       row = Enum.at(layout, y);
@@ -96,11 +97,11 @@ defmodule AOC2020Day11 do
     end)
   end
 
-  def simulate(layout, length_per_direction) do
+  def simulate(layout, length_per_direction, min_occupied) do
       seats = List.flatten(layout)
 
       Enum.reduce(seats, layout, fn seat, inner_layout ->
-        next_seat = apply_rule(seat, adjacent_seats(layout, seat, length_per_direction))
+        next_seat = apply_rule(seat, adjacent_seats(layout, seat, length_per_direction), min_occupied)
         row = Enum.at(inner_layout, seat.y)
 
         List.replace_at(inner_layout, seat.y, List.replace_at(row, seat.x, next_seat))
@@ -134,12 +135,13 @@ defmodule AOC2020Day11 do
   end
   def part1() do
     layout = parse()
-    length_per_direction = 1;
+    length_per_direction = 1
+    min_occupied = 4
 
     Enum.reduce_while(0..100000, {1, layout}, fn x, {count, prev} ->
         IO.puts(count)
-        format_layout(prev)
-        next = simulate(prev, length_per_direction)
+        next = simulate(prev, length_per_direction, min_occupied)
+        format_layout(next)
         if same_layout?(prev, next) do
           {:halt, {count, next}}
         else
@@ -154,11 +156,33 @@ defmodule AOC2020Day11 do
   def part2() do
     layout = parse()
 
-    1..5
-      |> Enum.to_list()
+    length_per_direction = 8
+    min_occupied = 5
+
+    Enum.reduce_while(0..1000000, {1, layout}, fn x, {count, prev} ->
+      if(x == 1000000) do IO.puts("!!!!!!!! END") end
+      next = simulate(prev, length_per_direction, min_occupied)
+      format_layout(next)
+      if same_layout?(prev, next) do
+        {:halt, {count, next}}
+      else
+        {:cont, {count + 1, next}}
+      end
+    end)
+    |> (fn {count, layout} -> List.flatten(layout) end).()
+    |> Enum.filter(fn seat -> seat.state == :occupied  end)
+    |> Enum.count()
+  end
+
+  def part3() do
+    l1 = parse("inputs/l1.txt")
+    l2 = parse("inputs/l2.txt")
+
+    same_layout?(l1, l2)
   end
 end
 
 
-AOC2020Day11.part1() |> IO.inspect
+#AOC2020Day11.part1() |> IO.inspect
 #AOC2020Day11.part2() |> IO.inspect
+AOC2020Day11.part3() |> IO.inspect

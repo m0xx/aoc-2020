@@ -15,7 +15,6 @@ defmodule Utils do
     fn i -> i == item end) + 1, length(items)), current ++ [item])  end)
   def combinaisons(length, items), do: combinaisons(length, items, [])
 
-
   defp avg(total, count), do: total / count
   defp format_result(duration, count), do: IO.puts("Average elapsed time (#{count} times): #{duration/1000}ms")
 
