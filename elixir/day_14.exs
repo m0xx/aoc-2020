@@ -1,4 +1,5 @@
 Code.require_file("elixir/utils.exs")
+Code.require_file("elixir/utils.exs")
 use Bitwise
 
 defmodule AOC2020Day14 do
@@ -156,4 +157,8 @@ end
 
 
 #AOC2020Day14.part1() |> IO.inspect
-AOC2020Day14.part2() |> IO.inspect
+#AOC2020Day14.part2() |> IO.inspect
+map = PuzzleMap.init_map(2,3,nil) |> PuzzleMap.rows() |> IO.inspect
+
+Map.get(map, %Point{x: 2, y: 2})
+

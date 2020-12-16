@@ -20,8 +20,8 @@ defmodule Utils do
 
   def benchmark(count, fun) do
       1..count
-       |> Enum.map(fn i -> :timer.tc(fun) end)
-       |> Enum.map(fn {t, r} -> t end)
+       |> Enum.map(fn _i -> :timer.tc(fun) end)
+       |> Enum.map(fn {t, _r} -> t end)
        |> Enum.sum
        |> avg(count)
        |> format_result(count)
