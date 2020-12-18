@@ -1,5 +1,6 @@
 Code.require_file("elixir/utils.exs")
 Code.require_file("elixir/three_d_grid.exs")
+Code.require_file("elixir/four_d_grid.exs")
 
 defmodule AOC2020Day17 do
   def parse(three_d_grid) do
@@ -12,6 +13,21 @@ defmodule AOC2020Day17 do
            |> Enum.map(&state/1)
            |> Enum.with_index()
            |> Enum.map(fn {state, x} -> {%ThreeDGrid.Point{x: x, y: y, z: 0}, state} end)
+         end
+       )
+    |> List.flatten()
+  end
+
+  def parse_4d(four_d_grid) do
+    File.read!("inputs/day-17.puzzle.txt")
+    |> String.split("\n", trim: true)
+    |> Enum.with_index()
+    |> Enum.map(
+         fn {row, y} ->
+           String.split(row, "", trim: true)
+           |> Enum.map(&state/1)
+           |> Enum.with_index()
+           |> Enum.map(fn {state, x} -> {%FourDGrid.Point{x: x, y: y, z: 0, w: 0}, state} end)
          end
        )
     |> List.flatten()
@@ -50,6 +66,38 @@ defmodule AOC2020Day17 do
        )
   end
 
+  def cycle_4d(four_d_grid) do
+    four_d_grid = FourDGrid.get_all_points(four_d_grid)
+                   |> Enum.reduce(
+                        four_d_grid,
+                        fn point, a_four_d_grid ->
+                          neighbors = FourDGrid.neighbors(four_d_grid, point)
+                          Enum.reduce(
+                            neighbors,
+                            a_four_d_grid,
+                            fn {n_point, value}, a_a_four_d_grid ->
+                              case FourDGrid.exists?(a_a_four_d_grid, n_point) do
+                                true -> a_a_four_d_grid
+                                false -> FourDGrid.update(a_a_four_d_grid, n_point, value)
+                              end
+                            end
+                          )
+                        end
+                      )
+
+    FourDGrid.get_all_points(four_d_grid)
+    |> Enum.reduce(
+         four_d_grid,
+         fn point, a_four_d_grid ->
+           active_neighbors = FourDGrid.neighbors(four_d_grid, point)
+                              |> Enum.map(fn {point, value} -> value end)
+                              |> Enum.filter(&(&1 == :active))
+           state = FourDGrid.get_value(four_d_grid, point)
+
+           FourDGrid.update(a_four_d_grid, point, next_state(active_neighbors, state))
+         end
+       )
+  end
 
   def next_state(active_neighbors, :active) do
     case length(active_neighbors) do
@@ -82,8 +130,6 @@ defmodule AOC2020Day17 do
                         end
                       )
 
-#    ThreeDGrid.neighbors(three_d_grid, %ThreeDGrid.Point{x: 1, y: 1, z: 0}) |> Enum.count()
-
     three_d_grid = 0..5
       |> Enum.reduce(three_d_grid, fn c, a_three_d_grid ->
       a_three_d_grid = cycle(a_three_d_grid)
@@ -100,11 +146,27 @@ defmodule AOC2020Day17 do
   end
 
   def part2() do
-    #    parse()
+    four_d_grid = FourDGrid.init_grid(3, 3, 1, 1, :inactive)
+    four_d_grid = parse_4d(four_d_grid)
+                   |> Enum.reduce(
+                        four_d_grid,
+                        fn {point, state}, a_four_d_grid ->
+                          FourDGrid.update(a_four_d_grid, point, state)
+                        end
+                      )
+
+    four_d_grid = 0..5
+                   |> Enum.reduce(four_d_grid, fn c, a_four_d_grid ->
+      a_four_d_grid = cycle_4d(a_four_d_grid)
+      IO.puts "Cycle #{c}"
+      a_four_d_grid
+    end)
+    FourDGrid.get_all_points(four_d_grid)
+    |> Enum.filter(&(FourDGrid.get_value(four_d_grid, &1) == :active))
+    |> Enum.count()
   end
 end
 
 
-AOC2020Day17.part1()
-|> IO.inspect
-#AOC2020Day17.part2() |> IO.inspect
+AOC2020Day17.part1() |> IO.inspect
+AOC2020Day17.part2() |> IO.inspect
