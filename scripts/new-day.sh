@@ -8,13 +8,13 @@ CURRENT_DAY=$1
 
 # nodejs
 JS_FILE=nodejs/days/$CURRENT_DAY/index.js
-if [ ! -f "$JS_FILE" ]; then
-  echo "Creating $JS_FILE..."
-  mkdir nodejs/days/$CURRENT_DAY
-  cp index.tpl.js $JS_FILE
-  sed -i '' "s/__DAY__/$CURRENT_DAY/" $JS_FILE
-  git add $JS_FILE
-fi
+#if [ ! -f "$JS_FILE" ]; then
+#  echo "Creating $JS_FILE..."
+#  mkdir nodejs/days/$CURRENT_DAY
+#  cp index.tpl.js $JS_FILE
+#  sed -i '' "s/__DAY__/$CURRENT_DAY/" $JS_FILE
+#  git add $JS_FILE
+#fi
 
 # elixir
 EXS_FILE=elixir/day_$CURRENT_DAY.exs
