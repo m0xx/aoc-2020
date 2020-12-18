@@ -16,11 +16,17 @@ defmodule FourDGrid do
         Enum.map(
           0..nb_row - 1,
           fn y ->
-            Enum.map(0..depth - 1, fn z ->
-              Enum.map(0..nb_w - 1, fn w ->
-                %Point{x: x, y: y, z: z, w: w} 
-              end)
-            end)
+            Enum.map(
+              0..depth - 1,
+              fn z ->
+                Enum.map(
+                  0..nb_w - 1,
+                  fn w ->
+                    %Point{x: x, y: y, z: z, w: w}
+                  end
+                )
+              end
+            )
           end
         )
       end
@@ -59,7 +65,7 @@ defmodule FourDGrid do
     |> Enum.filter(&(&1 != [0, 0, 0, 0]))
     |> Enum.map(fn [x, y, z, w] -> %{x: x, y: y, z: z, w: w} end)
     |> Enum.map(&Point.add(&1, point))
-#    |> Enum.filter(&(is_inbound(four_d_grid, &1) && &1 != point))
+      #    |> Enum.filter(&(is_inbound(four_d_grid, &1) && &1 != point))
     |> Enum.map(fn point -> {point, get_value(four_d_grid, point)} end)
   end
 
@@ -72,7 +78,8 @@ defmodule FourDGrid do
   end
 
   defp get_axis_indexes(four_d_grid, func) do
-    all_indexes = Map.keys(four_d_grid.grid) |> Enum.map(func)
+    all_indexes = Map.keys(four_d_grid.grid)
+                  |> Enum.map(func)
     Enum.min(all_indexes)..Enum.max(all_indexes)
   end
 
@@ -83,16 +90,22 @@ defmodule FourDGrid do
 
   def get_all_points(four_d_grid) do
     get_x_indexes(four_d_grid)
-      |> Enum.map(fn x ->
-        get_y_indexes(four_d_grid)
-          |> Enum.map(fn y ->
-              get_z_indexes(four_d_grid)
-                |> Enum.map(fn z ->
-                    get_w_indexes(four_d_grid)
-                      |> Enum.map(fn w -> %Point{x: x, y: y, z: z, w: w}  end)
-              end)
-        end)
-      end)
+    |> Enum.map(
+         fn x ->
+           get_y_indexes(four_d_grid)
+           |> Enum.map(
+                fn y ->
+                  get_z_indexes(four_d_grid)
+                  |> Enum.map(
+                       fn z ->
+                         get_w_indexes(four_d_grid)
+                         |> Enum.map(fn w -> %Point{x: x, y: y, z: z, w: w}  end)
+                       end
+                     )
+                end
+              )
+         end
+       )
     |> List.flatten()
   end
 
@@ -101,17 +114,17 @@ defmodule FourDGrid do
   end
 
   def display_z_w(four_d_grid, z, w, format_func) do
-      IO.puts "Z=#{z} W=#{w}"
-      get_y_indexes(four_d_grid)
-        |> Enum.map(fn y ->
-          get_x_indexes(four_d_grid)
-            |> Enum.map(&(format_func.(get_value(four_d_grid, %Point{x: &1, y: y, z: z, w: w}))))
-            |> Enum.reduce("", fn v, acc -> acc <> v end)
-        end)
-        |> Enum.each(fn row -> IO.puts row end)
+    IO.puts "Z=#{z} W=#{w}"
+    get_y_indexes(four_d_grid)
+    |> Enum.map(
+         fn y ->
+           get_x_indexes(four_d_grid)
+           |> Enum.map(&(format_func.(get_value(four_d_grid, %Point{x: &1, y: y, z: z, w: w}))))
+           |> Enum.reduce("", fn v, acc -> acc <> v end)
+         end
+       )
+    |> Enum.each(fn row -> IO.puts row end)
   end
-
-
 end
 
 

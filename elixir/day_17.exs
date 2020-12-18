@@ -68,22 +68,22 @@ defmodule AOC2020Day17 do
 
   def cycle_4d(four_d_grid) do
     four_d_grid = FourDGrid.get_all_points(four_d_grid)
-                   |> Enum.reduce(
-                        four_d_grid,
-                        fn point, a_four_d_grid ->
-                          neighbors = FourDGrid.neighbors(four_d_grid, point)
-                          Enum.reduce(
-                            neighbors,
-                            a_four_d_grid,
-                            fn {n_point, value}, a_a_four_d_grid ->
-                              case FourDGrid.exists?(a_a_four_d_grid, n_point) do
-                                true -> a_a_four_d_grid
-                                false -> FourDGrid.update(a_a_four_d_grid, n_point, value)
-                              end
-                            end
-                          )
-                        end
-                      )
+                  |> Enum.reduce(
+                       four_d_grid,
+                       fn point, a_four_d_grid ->
+                         neighbors = FourDGrid.neighbors(four_d_grid, point)
+                         Enum.reduce(
+                           neighbors,
+                           a_four_d_grid,
+                           fn {n_point, value}, a_a_four_d_grid ->
+                             case FourDGrid.exists?(a_a_four_d_grid, n_point) do
+                               true -> a_a_four_d_grid
+                               false -> FourDGrid.update(a_a_four_d_grid, n_point, value)
+                             end
+                           end
+                         )
+                       end
+                     )
 
     FourDGrid.get_all_points(four_d_grid)
     |> Enum.reduce(
@@ -131,15 +131,18 @@ defmodule AOC2020Day17 do
                       )
 
     three_d_grid = 0..5
-      |> Enum.reduce(three_d_grid, fn c, a_three_d_grid ->
-      a_three_d_grid = cycle(a_three_d_grid)
-      IO.puts "Cycle #{c}"
-      ThreeDGrid.get_z_indexes(a_three_d_grid)
-        |> Enum.each(fn z -> ThreeDGrid.display_z(a_three_d_grid, z, &format_state/1) end)
+                   |> Enum.reduce(
+                        three_d_grid,
+                        fn c, a_three_d_grid ->
+                          a_three_d_grid = cycle(a_three_d_grid)
+                          IO.puts "Cycle #{c}"
+                          ThreeDGrid.get_z_indexes(a_three_d_grid)
+                          |> Enum.each(fn z -> ThreeDGrid.display_z(a_three_d_grid, z, &format_state/1) end)
 
-      IO.puts "\n"
-      a_three_d_grid
-    end)
+                          IO.puts "\n"
+                          a_three_d_grid
+                        end
+                      )
     ThreeDGrid.get_all_points(three_d_grid)
     |> Enum.filter(&(ThreeDGrid.get_value(three_d_grid, &1) == :active))
     |> Enum.count()
@@ -148,19 +151,22 @@ defmodule AOC2020Day17 do
   def part2() do
     four_d_grid = FourDGrid.init_grid(3, 3, 1, 1, :inactive)
     four_d_grid = parse_4d(four_d_grid)
-                   |> Enum.reduce(
-                        four_d_grid,
-                        fn {point, state}, a_four_d_grid ->
-                          FourDGrid.update(a_four_d_grid, point, state)
-                        end
-                      )
+                  |> Enum.reduce(
+                       four_d_grid,
+                       fn {point, state}, a_four_d_grid ->
+                         FourDGrid.update(a_four_d_grid, point, state)
+                       end
+                     )
 
     four_d_grid = 0..5
-                   |> Enum.reduce(four_d_grid, fn c, a_four_d_grid ->
-      a_four_d_grid = cycle_4d(a_four_d_grid)
-      IO.puts "Cycle #{c}"
-      a_four_d_grid
-    end)
+                  |> Enum.reduce(
+                       four_d_grid,
+                       fn c, a_four_d_grid ->
+                         a_four_d_grid = cycle_4d(a_four_d_grid)
+                         IO.puts "Cycle #{c}"
+                         a_four_d_grid
+                       end
+                     )
     FourDGrid.get_all_points(four_d_grid)
     |> Enum.filter(&(FourDGrid.get_value(four_d_grid, &1) == :active))
     |> Enum.count()
@@ -168,5 +174,7 @@ defmodule AOC2020Day17 do
 end
 
 
-AOC2020Day17.part1() |> IO.inspect
-AOC2020Day17.part2() |> IO.inspect
+AOC2020Day17.part1()
+|> IO.inspect
+AOC2020Day17.part2()
+|> IO.inspect
