@@ -4,7 +4,7 @@ Code.require_file("elixir/four_d_grid.exs")
 
 defmodule AOC2020Day17 do
   def parse(three_d_grid) do
-    File.read!("inputs/day-17.puzzle.txt")
+    File.read!("inputs/day-17.sample.txt")
     |> String.split("\n", trim: true)
     |> Enum.with_index()
     |> Enum.map(
